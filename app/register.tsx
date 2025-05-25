@@ -45,6 +45,7 @@ const RegisterScreen: React.FC = () => {
   const handleRegister = () => {
     if (validate()) {
       console.log("register with", form);
+      router.push("/vaults")
     }
   };
 
