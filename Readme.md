@@ -24,10 +24,10 @@ O plano de sprints tem como visão 5 sprints divididas em 2 semanas cada. Totali
 
 1a sprint - 20/04 à 04/05
 
-- [X]  Implementar às telas de autenticação via login/senha;
+- [ ] ~Implementar às telas de autenticação via login/senha;~
 - [ ]  Implementar mecanismo de autenticação via biometria;
 - [ ]  Implementar modal de “Configurações gerais”;
-- [X]  Implementar layout e roteamento para a tela de listagem de cofres.
+- [ ] ~Implementar layout e roteamento para a tela de listagem de cofres.~
 
 2a sprint - 04/05 à 18/05
 
