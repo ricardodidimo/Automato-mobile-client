@@ -14,6 +14,7 @@ const LoginScreen: React.FC = () => {
 
   const handleLogin = () => {
     console.log("Logging in with", form);
+    router.push("/vaults")
   };
 
   const router = useRouter();
