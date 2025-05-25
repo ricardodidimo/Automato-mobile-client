@@ -9,16 +9,25 @@ As telas que foram projetadas para o projeto podem ser visualizadas em: [Prototi
 ## Esquematização banco de dados
 O diagrama de banco de dados pode ser visualizado em: [Diagrama DB](https://www.figma.com/proto/Zkirlt7UwRhGhnnN20FuSo/Automato?node-id=44-206&t=59bxVbJ5Z6Wa6YWg-1&scaling=scale-down-width&content-scaling=fixed)
 
+## Atualizações desde o último checkpoint
+* Atualizei o projeto para usar vue router como mecanismo de navegação;
+* Adicionei nativewind lib para utilizar classes tailwind como método de estilização de páginas;
+* Adicionei páginas estáticas: login, register, vault;
+
+Componentização: 
+* criei componentes para as seções reutilizáveis, notavelmente o 'header do aplicativo' figura em diversas partes e repetir seus elementos e estilizações seria uma má ideia. Encapsulei a lógica de apresentação em um componente próprio.
+* criei o componente 'MasterPasswordModal' tanto para encapsular os elementos como as futuras chamadas de API. Usei props para receber os dados.
+
 ## Planejamento de sprints
 
 O plano de sprints tem como visão 5 sprints divididas em 2 semanas cada. Totalizando 10 semanas de desenvolvimento.
 
 1a sprint - 20/04 à 04/05
 
-- [ ]  Implementar às telas de autenticação via login/senha;
+- [X]  Implementar às telas de autenticação via login/senha;
 - [ ]  Implementar mecanismo de autenticação via biometria;
 - [ ]  Implementar modal de “Configurações gerais”;
-- [ ]  Implementar layout e roteamento para a tela de listagem de cofres.
+- [X]  Implementar layout e roteamento para a tela de listagem de cofres.
 
 2a sprint - 04/05 à 18/05
 
