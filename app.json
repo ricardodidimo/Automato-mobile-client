@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "dpdm-components-mock",
-    "slug": "dpdm-components-mock",
+    "name": "automato",
+    "slug": "automato",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
