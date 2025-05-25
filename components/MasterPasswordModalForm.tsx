@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, Pressable, TextInput } from "react-native";
 import { Vault } from "../types/vault";
 
@@ -10,6 +10,18 @@ type Props = {
 };
 
 const MasterPasswordModalForm: React.FC<Props> = ({ onClose, vault }) => {
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [masterPassword, setmasterPassword] = useState<string>("");
+
+  function confirmPassword(passwordInput: string) {
+    if (passwordInput !== vault.password) {
+      setErrors({ masterPassword: "Invalid credentials" });
+      return;
+    }
+
+    onClose();
+  }
+
   return (
     <View className="absolute top-0 left-0 right-0 bottom-0 bg-[#1E1E1E] bg-opacity-90 justify-center items-center">
       <View className="bg-[#2A2A2A] p-6 rounded-lg w-4/5">
@@ -19,12 +31,18 @@ const MasterPasswordModalForm: React.FC<Props> = ({ onClose, vault }) => {
         </Text>
         <TextInput
           autoFocus
+          value={masterPassword}
+          onChangeText={(text) => setmasterPassword(text)}
           secureTextEntry
           placeholder="Master password"
           placeholderTextColor="#888"
           className="text-white py-2 rounded mb-4"
         />
-
+        {errors.masterPassword && (
+          <Text className="text-red-500 self-start text-sm">
+            {errors.masterPassword}
+          </Text>
+        )}
         <View className="flex-row justify-end">
           <Pressable onPress={onClose} className="flex-row px-2 py-2">
             <MaterialCommunityIcons
@@ -34,7 +52,10 @@ const MasterPasswordModalForm: React.FC<Props> = ({ onClose, vault }) => {
             />
             <Text className="text-[#DC2626] text-center ml-1">Cancel</Text>
           </Pressable>
-          <Pressable onPress={onClose} className="flex-row px-4 py-2 rounded">
+          <Pressable
+            onPress={() => confirmPassword(masterPassword)}
+            className="flex-row px-4 py-2 rounded"
+          >
             <MaterialCommunityIcons
               name="check-circle-outline"
               size={20}
