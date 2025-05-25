@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import "../global.css";
+import AppHeader from "../components/AppHeader";
+import BiometricLogin from "../components/BiometricLogin";
+
+import { useRouter } from "expo-router";
 
 const LoginScreen: React.FC = () => {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -13,17 +16,12 @@ const LoginScreen: React.FC = () => {
     console.log("Logging in with", form);
   };
 
+  const router = useRouter();
+
   return (
     <View className="flex-1 bg-[#121212] justify-center items-center">
       <View className="bg-[#1E1E1E] rounded-xl p-8 h-full w-full justify-center items-center">
-        <Image
-          source={require("../assets/logo.png")}
-          className="w-15 h-15 mb-4"
-        />
-        <Text className="text-2xl text-white font-light tracking-widest">
-          AUTÔMATO
-        </Text>
-        <Text className="text-sm text-[#cccccc] mb-8">Password Manager</Text>
+        <AppHeader />
 
         <Text className="self-end text-[#999999] text-sm mt-4">Username</Text>
         <TextInput
@@ -47,17 +45,13 @@ const LoginScreen: React.FC = () => {
           <Text className="text-white text-base font-semibold">Login</Text>
         </TouchableOpacity>
 
-        <View className="mt-16 items-center">
-          <Text className="text-[#ccc] text-sm">Login with biometry</Text>
-          <Image
-              source={require("../assets/biometric-access.png")}
-            className="w-6 h-6 mt-2 tint-[#00C382]"
-          />
+        <View className="mt-16">
+          <BiometricLogin />
         </View>
 
         <Text className="text-[#aaa] text-sm mt-16">
           Don’t have an account?{" "}
-          <Text className="text-[#00C382] font-semibold">SIGN UP</Text>
+          <Text className="text-[#00C382] font-semibold" onPress={() => router.push("/register")}>SIGN UP</Text>
         </Text>
       </View>
     </View>
