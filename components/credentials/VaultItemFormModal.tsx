@@ -42,9 +42,9 @@ export default function VaultItemFormModal({
   const [secondaryClaim, setSecondaryClaim] = useState(
     credential?.secondaryCredential
   );
-  const [category, setCategory] = useState(credential?.categoryId);
+  const [category, setCategory] = useState(credential?.categoryId ?? categories[0].id);
   const [showPassword, setShowPassword] = useState(false);
-  const state = useAuthStore.getState();
+  const state = useAuthStore();
 
   async function handleDeleteCredential() {
     const result = await deleteCredential({
@@ -52,7 +52,6 @@ export default function VaultItemFormModal({
       accessCode: state.accessCode!,
     });
 
-    console.log(result)
     if (onDelete) {
       onDelete();
     }
@@ -84,6 +83,7 @@ export default function VaultItemFormModal({
       }
 
       if (credential === undefined) {
+        console.log("sure?");
         const c = await createCredential({
           name: title,
           description: "new credential",
@@ -92,7 +92,7 @@ export default function VaultItemFormModal({
           categoryId: category,
           vaultId: state.vault?.id,
         });
-
+        console.log("sure?", c);
         if (!c.success) {
           Alert.alert("Erro", c.errors[0]);
           return;
@@ -147,7 +147,10 @@ export default function VaultItemFormModal({
               )}
             </View>
             {credential?.id != null && (
-              <Pressable style={styles.actionBtn} onPress={handleDeleteCredential}>
+              <Pressable
+                style={styles.actionBtn}
+                onPress={handleDeleteCredential}
+              >
                 <MaterialIcons
                   name="delete-outline"
                   size={20}

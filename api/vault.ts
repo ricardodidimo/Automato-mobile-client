@@ -19,6 +19,6 @@ export async function updateVault(data: UpdateVaultDTO): Promise<ApiResult<Vault
 }
 
 export async function deleteVault(data: DeleteVaultParams) {
-  const res = await api.delete(`/vaults/${data.id}`);
+  const res = await api.delete(`/vaults?id=${data.id}&accessCode=${data.accessCode}`);
   return res.data;
 }
