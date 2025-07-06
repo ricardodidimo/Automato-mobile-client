@@ -7,32 +7,119 @@ import {
   Pressable,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { MaterialIcons, Feather, Entypo } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { Category, Credential } from "../../api/api.types";
+import z from "zod";
+import {
+  createCredential,
+  deleteCredential,
+  updateCredential,
+} from "../../api/credentials";
+import { useAuthStore } from "../../stores/AuthStore";
 
 export default function VaultItemFormModal({
   visible,
   onClose,
+  onSave,
+  onDelete,
   credential,
-  categories
+  categories,
 }: {
   visible: boolean;
   onClose: () => void;
+  onSave: () => void;
+  onDelete?: () => void;
   credential?: Credential;
-  categories: Category[]
+  categories: Category[];
 }) {
   const [title, setTitle] = useState(credential?.name);
-  const [primaryClaim, setPrimaryClaim] = useState(credential?.primaryCredential);
+  const [primaryClaim, setPrimaryClaim] = useState(
+    credential?.primaryCredential
+  );
   const [secondaryClaim, setSecondaryClaim] = useState(
     credential?.secondaryCredential
   );
   const [category, setCategory] = useState(credential?.categoryId);
   const [showPassword, setShowPassword] = useState(false);
-  const [DeleteWarning, setDeleteWarning] = useState(false);
+  const state = useAuthStore.getState();
 
-  function deleteCredential() {}
+  async function handleDeleteCredential() {
+    const result = await deleteCredential({
+      id: credential!.id,
+      accessCode: state.accessCode!,
+    });
+
+    console.log(result)
+    if (onDelete) {
+      onDelete();
+    }
+
+    onClose();
+  }
+
+  const credentialSchema = z.object({
+    name: z.string().nonempty("Nome é obrigatorio"),
+  });
+  const [errors, setErrors] = useState<{ name?: string }>({});
+  const [loading, setLoading] = useState(false);
+
+  const handleSave = async () => {
+    setLoading(true);
+
+    try {
+      if (credential === undefined) {
+        const result = credentialSchema.safeParse({ name: title });
+
+        if (!result.success) {
+          const formatted = result.error.format();
+          setErrors({
+            name: formatted.name?._errors?.[0],
+          });
+
+          return;
+        }
+      }
+
+      if (credential === undefined) {
+        const c = await createCredential({
+          name: title,
+          description: "new credential",
+          primaryCredential: primaryClaim,
+          secondaryCredential: secondaryClaim,
+          categoryId: category,
+          vaultId: state.vault?.id,
+        });
+
+        if (!c.success) {
+          Alert.alert("Erro", c.errors[0]);
+          return;
+        }
+      } else {
+        const result = await updateCredential({
+          name: title,
+          credentialsId: credential.id,
+          vaultAccessCode: state.accessCode,
+          primaryCredential: primaryClaim,
+          secondaryCredential: secondaryClaim,
+          categoryId: category,
+          vaultId: state.vault?.id,
+        });
+
+        if (!result.success) {
+          Alert.alert("Error", result.errors[0]);
+          return;
+        }
+      }
+
+      onSave();
+      onClose();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -44,7 +131,7 @@ export default function VaultItemFormModal({
                 <MaterialIcons name="cancel" size={20} color="#fff" />
                 <Text style={styles.actionText}>Cancel</Text>
               </Pressable>
-              <Pressable style={styles.actionBtn}>
+              <Pressable style={styles.actionBtn} onPress={handleSave}>
                 <MaterialIcons
                   name="check-circle-outline"
                   size={20}
@@ -52,9 +139,15 @@ export default function VaultItemFormModal({
                 />
                 <Text style={styles.saveText}>Save</Text>
               </Pressable>
+
+              {loading && (
+                <View className="mt-16">
+                  <ActivityIndicator color={"#00C382"} />
+                </View>
+              )}
             </View>
             {credential?.id != null && (
-              <Pressable style={styles.actionBtn} onPress={deleteCredential}>
+              <Pressable style={styles.actionBtn} onPress={handleDeleteCredential}>
                 <MaterialIcons
                   name="delete-outline"
                   size={20}
@@ -72,6 +165,9 @@ export default function VaultItemFormModal({
               placeholder="Title"
               placeholderTextColor="#555"
             />
+            {errors.name && (
+              <Text className="text-red-400 self-end">{errors.name}</Text>
+            )}
           </View>
 
           <View style={styles.formRow}>

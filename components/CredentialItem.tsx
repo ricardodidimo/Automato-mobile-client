@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import VaultItemFormModal from "./credentials/VaultItemFormModal";
 import { Category, Credential } from "../api/api.types";
 
-export default function CredentialItem(props: { item: Credential, categories: Category[] }) {
+export default function CredentialItem(props: { item: Credential, categories: Category[], fetch: () => void }) {
   function copyCredential(target: "Primary" | "Second") {
     if (target === "Primary") {
       Clipboard.setStringAsync(props.item.primaryCredential);
@@ -46,6 +46,8 @@ export default function CredentialItem(props: { item: Credential, categories: Ca
       </View>
 
       <VaultItemFormModal
+        onSave={() => {props.fetch()}}
+        onDelete={() => {props.fetch()}}
         visible={showModal}
         categories={props.categories}
         credential={props.item}
