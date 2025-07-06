@@ -17,7 +17,7 @@ import {
   listCategories,
   updateCategory,
 } from "../../api/category";
-import { createVault, updateVault } from "../../api/vault";
+import { createVault, deleteVault, updateVault } from "../../api/vault";
 import z from "zod";
 
 interface Props {
@@ -48,7 +48,7 @@ const VaultOptionsModalForm: React.FC<Props> = ({
   );
   const [editingName, setEditingName] = useState("");
 
-  const userId = useAuthStore().user?.id;
+  const state = useAuthStore();
 
   const vaultSchema = z.object({
     name: z.string().nonempty("Nome é obrigatorio"),
@@ -62,7 +62,7 @@ const VaultOptionsModalForm: React.FC<Props> = ({
       try {
         const fetchedCategories = await listCategories({
           page: 1,
-          userId: userId!,
+          userId: state.user!.id!,
           pageSize: 10,
         });
 
@@ -99,7 +99,7 @@ const VaultOptionsModalForm: React.FC<Props> = ({
       {
         id: Date.now().toString(),
         name,
-        userId: userId!,
+        userId: state.user!.id!,
         isNew: true,
         isEdited: false,
         deleted: false,
@@ -109,26 +109,25 @@ const VaultOptionsModalForm: React.FC<Props> = ({
 
   const handleSave = async () => {
     if (vault === undefined) {
-    const result = vaultSchema.safeParse({ name, code });
+      const result = vaultSchema.safeParse({ name, code });
 
-    if (!result.success) {
-      const formatted = result.error.format();
-      setErrors({
-        name: formatted.name?._errors?.[0],
-        code: formatted.code?._errors?.[0],
-      });
+      if (!result.success) {
+        const formatted = result.error.format();
+        setErrors({
+          name: formatted.name?._errors?.[0],
+          code: formatted.code?._errors?.[0],
+        });
 
-      return;
+        return;
+      }
     }
-    }
-
 
     if (vault === undefined) {
       const c = await createVault({
         accessCode: code,
         name: name,
         description: "new vault",
-        userID: userId,
+        userID: state.user!.id!,
       });
 
       if (!c.success) {
@@ -147,7 +146,7 @@ const VaultOptionsModalForm: React.FC<Props> = ({
     const newCategories = categoryList
       .filter((c) => c.isNew)
       .map(async (c) => {
-        await createCategory({ name: c.name, userId: userId! });
+        await createCategory({ name: c.name, userId: state.user!.id! });
       });
     const updatedCategories = categoryList
       .filter((c) => c.isEdited)
@@ -163,6 +162,16 @@ const VaultOptionsModalForm: React.FC<Props> = ({
     onSave();
     onClose();
   };
+
+  async function handleDeleteVault() {
+    const result = await deleteVault({
+      id: vault!.id,
+      accessCode: state.accessCode!,
+    });
+
+    onSave();
+    onClose();
+  }
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -189,7 +198,7 @@ const VaultOptionsModalForm: React.FC<Props> = ({
           <Text className="text-white text-2xl">
             {vault?.name ?? "Novo cofre"}
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleDeleteVault}>
             <Feather name="trash-2" size={16} color="red" />
           </TouchableOpacity>
         </View>
@@ -235,7 +244,7 @@ const VaultOptionsModalForm: React.FC<Props> = ({
           </TouchableOpacity>
         </View>
         <FlatList
-          data={categoryList.filter(c => !c.deleted)}
+          data={categoryList.filter((c) => !c.deleted)}
           keyExtractor={(item) => item.id}
           style={{ maxHeight: 200 }}
           renderItem={({ item }) => {

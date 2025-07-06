@@ -28,14 +28,15 @@ const VaultDashboard: React.FC = () => {
 
   const userId = useAuthStore((state) => state.user?.id);
   const vault = useAuthStore.getState().vault;
+  const code = useAuthStore.getState().accessCode;
 
   async function fetchCredentials() {
     try {
       const fetchedCredentials = await listCredentials({
         page: 1,
-        accessCode: "123",
-        vaultId: "77d5afe2-5bd7-4bdd-b0ce-738e173ab1ac",
-        pageSize: 10,
+        accessCode: code!,
+        vaultId: vault!.id,
+        pageSize: 100,
       });
 
       const credentialsFromApi =
@@ -151,7 +152,7 @@ const VaultDashboard: React.FC = () => {
           fetchCredentials();
         }}
         visible={showModal}
-        categories={categories.filter(c => c.id !== "0")}
+        categories={categories.filter((c) => c.id !== "0")}
         onClose={() => setShowModal(false)}
       />
       <FlatList
@@ -164,7 +165,7 @@ const VaultDashboard: React.FC = () => {
         renderItem={({ item }) => (
           <CredentialItem
             item={item}
-            categories={categories.filter(c => c.id !== "0")}
+            categories={categories.filter((c) => c.id !== "0")}
             fetch={fetchCredentials}
           ></CredentialItem>
         )}
