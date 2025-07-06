@@ -81,7 +81,6 @@ const VaultOptionsModalForm: React.FC<Props> = ({
   }, [vault]);
 
   useEffect(() => {
-    console.log(vault);
     setTitle(vault?.name);
   }, [vault]);
 
@@ -145,8 +144,6 @@ const VaultOptionsModalForm: React.FC<Props> = ({
       });
     }
 
-    console.log("----------------")
-    console.log(categoryList)
     const newCategories = categoryList
       .filter((c) => c.isNew)
       .map(async (c) => {
@@ -160,9 +157,7 @@ const VaultOptionsModalForm: React.FC<Props> = ({
     const deletedCategories = categoryList
       .filter((c) => c.deleted)
       .forEach(async (c) => {
-        console.log("teste")
         const resp = await deleteCategory({ id: c.id });
-        console.log(resp);
       });
 
     onSave();

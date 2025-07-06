@@ -10,6 +10,7 @@ export default function _layout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="register" options={{ headerShown: false }} />
         <Stack.Screen name="vaults" options={{ headerShown: false }} />
+        <Stack.Screen name="credentials" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );
