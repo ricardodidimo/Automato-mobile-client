@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { View, Text, Pressable, TextInput } from "react-native";
-import { Vault } from "../types/vault";
 
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Vault } from "../api/api.types";
+import { listCredentials } from "../api/credentials";
+import { useAuthStore } from "../stores/AuthStore";
+import { router, useFocusEffect } from "expo-router";
 
 type Props = {
   onClose: () => void;
@@ -13,13 +16,32 @@ const MasterPasswordModalForm: React.FC<Props> = ({ onClose, vault }) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [masterPassword, setmasterPassword] = useState<string>("");
 
-  function confirmPassword(passwordInput: string) {
-    if (passwordInput !== vault.password) {
-      setErrors({ masterPassword: "Invalid credentials" });
-      return;
-    }
+  const authStore = useAuthStore();
 
-    onClose();
+  if (authStore.vault?.id === vault.id) {
+    router.replace("/credentials");
+    return;
+  }
+
+  async function confirmPassword() {
+    try {
+      const fetchedCredentials = await listCredentials({
+        page: 1,
+        accessCode: masterPassword,
+        vaultId: vault.id,
+        pageSize: 1,
+      });
+
+      if (!fetchedCredentials.success) {
+        setErrors({ masterPassword: "Invalid code!" });
+        return;
+      }
+
+      authStore.unlock(masterPassword, vault);
+      router.replace("/credentials");
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   return (
@@ -53,7 +75,7 @@ const MasterPasswordModalForm: React.FC<Props> = ({ onClose, vault }) => {
             <Text className="text-[#DC2626] text-center ml-1">Cancel</Text>
           </Pressable>
           <Pressable
-            onPress={() => confirmPassword(masterPassword)}
+            onPress={() => confirmPassword()}
             className="flex-row px-4 py-2 rounded"
           >
             <MaterialCommunityIcons
