@@ -7,9 +7,7 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CredentialItem from "../components/CredentialItem";
 import VaultItemFormModal from "../components/credentials/VaultItemFormModal";
 import CategoryCarousel from "../components/credentials/CategoryCarousel";
@@ -88,9 +86,8 @@ const VaultDashboard: React.FC = () => {
 
   const [showModal, setShowModal] = useState(false);
 
-  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView className="flex-1 bg-[#1E1E1E] px-4 py-12 gap-9">
+    <View className="flex-1 bg-[#1E1E1E] px-4 py-12 gap-9">
       <View className="flex gap-2">
         <View className="flex-row gap-2">
           <Text className="text-[#ffffff] text-base" style={styles.h1}>
@@ -156,11 +153,11 @@ const VaultDashboard: React.FC = () => {
         onClose={() => setShowModal(false)}
       />
       <FlatList
-        data={credentialsView}
+        data={credentialsView.filter((item) => !!item.id)}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{
           gap: 12,
-          paddingBottom: insets.bottom + 32,
+          paddingBottom: 32,
         }}
         renderItem={({ item }) => (
           <CredentialItem
@@ -170,7 +167,7 @@ const VaultDashboard: React.FC = () => {
           ></CredentialItem>
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

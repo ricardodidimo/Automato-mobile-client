@@ -18,8 +18,10 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "utfpr.ricardodidimo.automato",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       }
     },
@@ -34,6 +36,12 @@
     "scheme": "dpdm-scheme",
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f9082fc9-f42e-48de-ac56-951b7e27b21b"
+      }
     }
   }
 }

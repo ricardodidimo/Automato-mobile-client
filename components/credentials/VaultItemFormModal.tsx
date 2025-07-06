@@ -42,7 +42,9 @@ export default function VaultItemFormModal({
   const [secondaryClaim, setSecondaryClaim] = useState(
     credential?.secondaryCredential
   );
-  const [category, setCategory] = useState(credential?.categoryId ?? categories[0].id);
+  const [category, setCategory] = useState(
+    credential?.categoryId ?? (categories.length > 0 ? categories[0].id : "")
+  );
   const [showPassword, setShowPassword] = useState(false);
   const state = useAuthStore();
 
