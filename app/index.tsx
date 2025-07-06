@@ -72,7 +72,7 @@ await SecureStore.setItemAsync("biometry_password", form.password);
       name: auth.data.name,
     });
 
-    router.push("/vaults");
+    router.replace("/vaults");
   };
 
   return (

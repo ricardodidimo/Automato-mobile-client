@@ -50,7 +50,7 @@ export default function BiometricLogin() {
         name: auth.data.name,
       });
 
-      router.push("/vaults");
+      router.replace("/vaults");
     } catch (err) {
       Alert.alert('Login falhou. Tente novamente.');
     } finally {

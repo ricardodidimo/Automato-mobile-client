@@ -44,7 +44,7 @@ const RegisterScreen: React.FC = () => {
 
   const handleRegister = () => {
     if (validate()) {
-      router.push("/vaults")
+      router.replace("/vaults")
     }
   };
 
