@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { login } from "../api/auth";
 import { useAuthStore } from "../stores/AuthStore";
 import { z } from "zod";
+import * as SecureStore from "expo-secure-store";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -62,6 +63,9 @@ const LoginScreen: React.FC = () => {
       Alert.alert("Erro", "Credenciais inválidas");
       return;
     }
+
+    await SecureStore.setItemAsync("biometry_email", form.email);
+await SecureStore.setItemAsync("biometry_password", form.password);
 
     useAuthStore.getState().login(auth.data.token, {
       id: auth.data.id,

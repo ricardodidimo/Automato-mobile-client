@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, Pressable, TextInput } from "react-native";
 
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -18,10 +18,11 @@ const MasterPasswordModalForm: React.FC<Props> = ({ onClose, vault }) => {
 
   const authStore = useAuthStore();
 
-  if (authStore.vault?.id === vault.id) {
-    router.replace("/credentials");
-    return;
-  }
+  useEffect(() => {
+    if (authStore.vault?.id === vault.id) {
+      router.replace("/credentials");
+    }
+  }, [authStore.vault, vault.id, router]);
 
   async function confirmPassword() {
     try {

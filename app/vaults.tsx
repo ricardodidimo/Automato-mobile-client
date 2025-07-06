@@ -26,7 +26,6 @@ const VaultDashboard: React.FC = () => {
 
   async function fetchVaults() {
     const result = await listVaults(userId!, 1);
-    console.log(result);
     setVaults(result.data);
     setFilteredVaults(result.data);
   }
