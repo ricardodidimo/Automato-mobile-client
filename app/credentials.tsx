@@ -22,11 +22,31 @@ import { router } from "expo-router";
 const VaultDashboard: React.FC = () => {
   const [search, setSearch] = useState("");
   const [credentials, setCredentials] = useState<Credential[]>([]);
-  const [credentialsView, setCredentialsView] = useState<Credential[]>(credentials);
+  const [credentialsView, setCredentialsView] =
+    useState<Credential[]>(credentials);
   const [categories, setCategories] = useState<Category[]>([]);
 
   const userId = useAuthStore((state) => state.user?.id);
   const vault = useAuthStore.getState().vault;
+
+  async function fetchCredentials() {
+    try {
+      const fetchedCredentials = await listCredentials({
+        page: 1,
+        accessCode: "123",
+        vaultId: "77d5afe2-5bd7-4bdd-b0ce-738e173ab1ac",
+        pageSize: 10,
+      });
+
+      const credentialsFromApi =
+        fetchedCredentials?.data.filter((c) => c.vaultId === vault?.id) ?? [];
+      setCredentials(credentialsFromApi);
+      setCredentialsView(credentialsFromApi);
+    } catch (e) {
+      console.error("fetchedCredentials failed", e);
+    }
+  }
+
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -44,23 +64,6 @@ const VaultDashboard: React.FC = () => {
         setCategories(allCategories);
       } catch (e) {
         console.error("fetchedCategories failed", e);
-      }
-    }
-
-    async function fetchCredentials() {
-      try {
-        const fetchedCredentials = await listCredentials({
-          page: 1,
-          accessCode: "123",
-          vaultId: "77d5afe2-5bd7-4bdd-b0ce-738e173ab1ac",
-          pageSize: 10,
-        });
-
-        const credentialsFromApi = fetchedCredentials?.data.filter(c => c.vaultId === vault?.id) ?? [];
-        setCredentials(credentialsFromApi);
-        setCredentialsView(credentialsFromApi);
-      } catch (e) {
-        console.error("fetchedCredentials failed", e);
       }
     }
 
@@ -92,12 +95,6 @@ const VaultDashboard: React.FC = () => {
           <Text className="text-[#ffffff] text-base" style={styles.h1}>
             {vault?.name}
           </Text>
-
-          <MaterialCommunityIcons
-            name="transfer-down"
-            size={16}
-            color="#00C382"
-          />
         </View>
 
         <View className="flex-row w-full items-center gap-4">
@@ -150,8 +147,11 @@ const VaultDashboard: React.FC = () => {
       </View>
 
       <VaultItemFormModal
-        categories={categories}
+        onSave={() => {
+          fetchCredentials();
+        }}
         visible={showModal}
+        categories={categories.filter(c => c.id !== "0")}
         onClose={() => setShowModal(false)}
       />
       <FlatList
@@ -162,7 +162,11 @@ const VaultDashboard: React.FC = () => {
           paddingBottom: insets.bottom + 32,
         }}
         renderItem={({ item }) => (
-          <CredentialItem item={item} categories={categories}></CredentialItem>
+          <CredentialItem
+            item={item}
+            categories={categories.filter(c => c.id !== "0")}
+            fetch={fetchCredentials}
+          ></CredentialItem>
         )}
       />
     </SafeAreaView>
